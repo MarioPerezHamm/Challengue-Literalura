@@ -97,25 +97,35 @@ private List<Libro> libros = new ArrayList<>();
                 // Validar si hay al menos un autor
                 if (datosLibro.autores() != null && !datosLibro.autores().isEmpty()) {
                     DatosAutores autor = datosLibro.autores().get(0);
+                    String tituloLibro = datosLibro.titulo();
 
-                    // Crear libro y añadirlo a la lista
-                    Libro libro = new Libro(datosLibro, autor);
-                    libros.add(libro);
+                    Optional<Libro> libroExistente = repository.findByTituloIgnoreCase(tituloLibro);
 
-                    // Mostrar información
-                    System.out.println("\n--- Libro Encontrado ---");
-                    System.out.println("Título: " + libro.getTitulo());
-                    System.out.println("Autor: " + libro.getAutores());
-                    System.out.println("Idioma: " + libro.getLenguaje());
-                    System.out.println("Año de muerte del autor: " + libro.getAutorMuerte());
+                    if (libroExistente.isPresent()) {
+                        System.out.println("\n El libro ya está registrado en la base de datos. No se puede volver a registrar.");
+                    } else {
+                        // Crear libro y añadirlo a la lista
+                        Libro libro = new Libro(datosLibro, autor);
+                        libros.add(libro);
+                        //Guardar en la base de datos
+                        repository.save(libro);
 
-                    String resumen = (libro.getResumen() != null && !libro.getResumen().isBlank())
-                            ? libro.getResumen()
-                            : "Resumen no disponible.";
+                        // Mostrar información
+                        System.out.println("\n===== Libro Encontrado =====");
+                        System.out.println("Título: " + libro.getTitulo());
+                        System.out.println("Autor: " + libro.getAutores());
+                        System.out.println("Idioma: " + libro.getLenguaje());
+                        System.out.println("Año de muerte del autor: " + libro.getAutorMuerte());
+                        System.out.println("Numero de descargas: " + libro.getDescargas());
 
-                    System.out.println("Resumen: " + resumen);
-                    //Guardar en la base de datos
-                    repository.save(libro);
+                        System.out.println("\n Libro guardado exitosamente en la base de datos.");
+
+                        String resumen = (libro.getResumen() != null && !libro.getResumen().isBlank())
+                                ? libro.getResumen()
+                                : "Resumen no disponible.";
+
+                        System.out.println("Resumen: " + resumen);
+                    }
 
                 } else {
                     System.out.println("No se encontró información del autor para este libro.");
@@ -160,7 +170,16 @@ private List<Libro> libros = new ArrayList<>();
         });
     }
     private void verLibrosPorIdioma() {
-        System.out.println("Ingrese el código del idioma (ej: 'en' para inglés, 'es' para español):");
+        System.out.println("""
+                            Ingrese el código del idioma:
+                              es  -> Español
+                              en  -> Inglés
+                              fr  -> Francés
+                              de  -> Alemán
+                              pt  -> Portugués
+                              it  -> Italiano
+                            Ejemplo: 'es' para español
+                            """);
         String idioma = teclado.nextLine();
 
         List<Libro> librosPorIdioma = repository.findByLenguaje(idioma);
