@@ -27,15 +27,8 @@ Aplicación Java basada en Spring Boot que permite buscar libros mediante la API
 - Spring Boot
 - Spring Data JPA
 - API REST Gutendex
-- H2 (o MySQL/PostgreSQL si lo cambias)
+- PostgreSQL
 - Maven
 
 ---
 
-## ⚙️ Cómo usar
-
-1. Clona el repositorio:
-
-```bash
-git clone https://github.com/tu_usuario/tu_repositorio.git
-cd tu_repositorio
